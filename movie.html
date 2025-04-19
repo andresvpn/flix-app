@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Detalle de Película</title>
+  <title>Detalle de Película | FlixStream</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <style>
@@ -14,6 +14,7 @@
       margin: 0;
       padding: 0;
     }
+
     .backdrop {
       background-size: cover;
       background-position: center;
@@ -26,33 +27,39 @@
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.6);
     }
+
     .movie-container {
       position: relative;
       top: -80px;
       z-index: 2;
       background-color: #161b22;
       border-radius: 12px;
-      padding: 20px;
-      margin: 0 10px;
-      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+      padding: 30px 25px;
+      margin: 0 auto;
+      max-width: 900px;
+      box-shadow: 0 8px 20px rgba(0, 255, 255, 0.1);
     }
+
     .movie-poster {
       width: 100%;
-      max-width: 150px;
+      max-width: 160px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(255,255,255,0.1);
     }
+
     .movie-title {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: bold;
       margin-bottom: 10px;
     }
+
     .section-title {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
       color: #0dcaf0;
-      margin-top: 25px;
+      margin-top: 30px;
     }
+
     .actor-img {
       width: 80px;
       height: 80px;
@@ -61,37 +68,41 @@
       border: 2px solid #0dcaf0;
       margin-bottom: 5px;
     }
+
     .actor-card {
       text-align: center;
       margin: 10px 0;
     }
+
     .play-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(145deg, #0dbfe0, #0aa0c0);
-  border: 2px solid #22e3ff;
-  color: white;
-  padding: 16px;
-  border-radius: 50%;
-  box-shadow: 
-    0 8px 20px rgba(0, 221, 255, 0.4),
-    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 2px 6px rgba(255, 255, 255, 0.1);
-  font-size: 24px;
-  z-index: 999;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-.play-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 
-    0 12px 24px rgba(0, 221, 255, 0.6),
-    inset 0 -3px 5px rgba(0, 0, 0, 0.4),
-    inset 0 3px 8px rgba(255, 255, 255, 0.15);
-}
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(145deg, #0dbfe0, #0aa0c0);
+      border: 2px solid #22e3ff;
+      color: white;
+      padding: 16px;
+      border-radius: 50%;
+      box-shadow: 
+        0 8px 20px rgba(0, 221, 255, 0.4),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 2px 6px rgba(255, 255, 255, 0.1);
+      font-size: 24px;
+      z-index: 999;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 
+        0 12px 24px rgba(0, 221, 255, 0.6),
+        inset 0 -3px 5px rgba(0, 0, 0, 0.4),
+        inset 0 3px 8px rgba(255, 255, 255, 0.15);
+    }
+
     @media (max-width: 576px) {
       .movie-title {
-        font-size: 20px;
+        font-size: 22px;
       }
       .actor-img {
         width: 60px;
@@ -104,12 +115,12 @@
 
 <div id="backdrop" class="backdrop"></div>
 
-<div class="container movie-container">
+<div class="movie-container container">
   <div class="row">
-    <div class="col-4 col-sm-3 text-center">
+    <div class="col-12 col-sm-4 text-center mb-3 mb-sm-0">
       <img id="poster" class="movie-poster" src="" alt="Póster">
     </div>
-    <div class="col-8 col-sm-9">
+    <div class="col-12 col-sm-8">
       <div class="movie-title" id="title"></div>
       <p><strong>Calificación:</strong> <span id="rating"></span>/10</p>
       <p><strong>Duración:</strong> <span id="runtime"></span> min</p>
@@ -132,7 +143,8 @@
 
 <script>
   const urlParams = new URLSearchParams(window.location.search);
-const movieId = urlParams.get("id");
+  const movieId = urlParams.get("id");
+
   async function cargarPelicula() {
     try {
       const resp = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=1f098c7d68777348425d008055475b88&language=es-MX`);
@@ -176,7 +188,7 @@ const movieId = urlParams.get("id");
   }
 
   function redirigirAEnlace() {
-    window.location.href = `https://flixstream.pro/e/${movieId}`;  // Redirige a la página de la película
+    window.location.href = `https://flixstream.pro/e/${movieId}`;
   }
 
   cargarPelicula();
