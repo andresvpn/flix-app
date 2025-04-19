@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlixStream</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0d0f14;
+      color: #e0e6ed;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+    }
+
+    .navbar {
+      background-color: #0a1a33;
+      border-bottom: 1px solid #193c66;
+    }
+
+    .navbar-brand {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #4da3ff;
+    }
+
+    .form-control {
+      background-color: #132235;
+      border: 1px solid #264c75;
+      color: white;
+    }
+
+    .form-control:focus {
+      border-color: #4da3ff;
+      box-shadow: 0 0 0 0.1rem #4da3ff88;
+    }
+
+    .btn-outline-light {
+      border-color: #4da3ff;
+      color: #4da3ff;
+    }
+
+    .btn-outline-light:hover {
+      background-color: #4da3ff;
+      color: #fff;
+    }
+
+    .movie-card {
+      background-color: #121e2d;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: transform 0.2s ease;
+      border: 1px solid #193c66;
+    }
+
+    .movie-card:hover {
+      transform: scale(1.02);
+    }
+
+    .movie-poster {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+
+    .movie-title {
+      font-size: 15px;
+      padding: 10px 10px 0;
+      font-weight: 500;
+      color: #c6dbf5;
+    }
+
+   .btn-ver {
+  display: block;
+  margin: 10px auto 15px;
+  width: 90%;
+  padding: 10px 0;
+  background-color: #2196f3;
+  border: none;
+  border-radius: 30px;
+  font-weight: bold;
+  color: white;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.btn-ver:hover {
+  background-color: #1976d2;
+  transform: scale(1.03);
+} 
+
+    #contenedorPeliculas {
+      padding-top: 30px;
+    }
+
+    @media (max-width: 576px) {
+      .movie-poster {
+        height: 220px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar fixed-top px-3 py-2">
+  <div class="container-fluid">
+    <form class="d-flex w-100" role="search" onsubmit="buscarPeliculas(event)">
+      <input class="form-control me-2" type="search" placeholder="Buscar películas..." id="inputBusqueda">
+      <button class="btn btn-outline-light" type="submit">Buscar</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <div class="row" id="contenedorPeliculas">
+    <!-- Películas aquí -->
+  </div>
+</div>
+
+<script>
+  const API_KEY = '1f098c7d68777348425d008055475b88';
+
+  async function cargarPopulares() {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${API_KEY}&language=es-MX&page=1`);
+    const data = await res.json();
+    mostrarPeliculas(data.results);
+  }
+
+  function mostrarPeliculas(peliculas) {
+    const contenedor = document.getElementById('contenedorPeliculas');
+    contenedor.innerHTML = '';
+    peliculas.forEach(peli => {
+      const poster = peli.poster_path ? `https://image.tmdb.org/t/p/w300${peli.poster_path}` : 'https://via.placeholder.com/300x450?text=Sin+Imagen';
+      contenedor.innerHTML += `
+        <div class="col-6 col-sm-4 col-md-3 mb-4">
+          <div class="movie-card">
+            <img src="${poster}" class="movie-poster" alt="${peli.title}">
+            <div class="movie-title">${peli.title}</div>
+            <a href="movie.html?id=${peli.id}" class="btn btn-ver">Ver más</a>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  async function buscarPeliculas(e) {
+    e.preventDefault();
+    const texto = document.getElementById('inputBusqueda').value.trim();
+    if (texto === '') return;
+    const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=es-MX&query=${encodeURIComponent(texto)}`);
+    const data = await res.json();
+    mostrarPeliculas(data.results);
+  }
+
+  cargarPopulares();
+</script>
+
+</body>
+</html>
