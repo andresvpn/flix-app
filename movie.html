@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Detalle de Película</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #ffffff;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .backdrop {
+      background-size: cover;
+      background-position: center;
+      height: 200px;
+      position: relative;
+    }
+    .backdrop::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .movie-container {
+      position: relative;
+      top: -80px;
+      z-index: 2;
+      background-color: #161b22;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 0 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+    }
+    .movie-poster {
+      width: 100%;
+      max-width: 150px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+    .movie-title {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #0dcaf0;
+      margin-top: 25px;
+    }
+    .actor-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid #0dcaf0;
+      margin-bottom: 5px;
+    }
+    .actor-card {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .play-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #0dcaf0;
+      border: none;
+      color: white;
+      padding: 15px;
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+      font-size: 24px;
+      z-index: 999;
+      transition: transform 0.2s ease;
+    }
+    .play-btn:hover {
+      transform: scale(1.1);
+    }
+    @media (max-width: 576px) {
+      .movie-title {
+        font-size: 20px;
+      }
+      .actor-img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="backdrop" class="backdrop"></div>
+
+<div class="container movie-container">
+  <div class="row">
+    <div class="col-4 col-sm-3 text-center">
+      <img id="poster" class="movie-poster" src="" alt="Póster">
+    </div>
+    <div class="col-8 col-sm-9">
+      <div class="movie-title" id="title"></div>
+      <p><strong>Calificación:</strong> <span id="rating"></span>/10</p>
+      <p><strong>Duración:</strong> <span id="runtime"></span> min</p>
+      <p><strong>Estreno:</strong> <span id="release"></span></p>
+      <p><strong>Géneros:</strong> <span id="genres"></span></p>
+    </div>
+  </div>
+
+  <div class="section-title">Sinopsis</div>
+  <p id="overview"></p>
+
+  <div class="section-title">Reparto principal</div>
+  <div class="row" id="cast"></div>
+</div>
+
+<!-- Botón flotante -->
+<button class="play-btn" onclick="redirigirAEnlace()" title="Reproducir">
+  <i class="bi bi-play-fill"></i>
+</button>
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+const movieId = urlParams.get("id");
+  async function cargarPelicula() {
+    try {
+      const resp = await fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=1f098c7d68777348425d008055475b88&language=es-MX`);
+      const data = await resp.json();
+
+      document.getElementById("poster").src = `https://image.tmdb.org/t/p/w300${data.poster_path}`;
+      document.getElementById("title").textContent = data.title;
+      document.getElementById("rating").textContent = data.vote_average;
+      document.getElementById("runtime").textContent = data.runtime;
+      document.getElementById("release").textContent = data.release_date;
+      document.getElementById("genres").textContent = data.genres.map(g => g.name).join(", ");
+      document.getElementById("overview").textContent = data.overview;
+      document.getElementById("backdrop").style.backgroundImage = `url(https://image.tmdb.org/t/p/original${data.backdrop_path})`;
+    } catch (e) {
+      document.querySelector('.movie-container').innerHTML = '<p class="text-danger">Error al cargar la película.</p>';
+    }
+  }
+
+  async function cargarActores() {
+    try {
+      const resp = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=1f098c7d68777348425d008055475b88&language=es-MX`);
+      const data = await resp.json();
+      const castContainer = document.getElementById("cast");
+      const topActors = data.cast.slice(0, 6);
+
+      topActors.forEach(actor => {
+        const imgSrc = actor.profile_path 
+          ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` 
+          : 'https://via.placeholder.com/80x80?text=No+Foto';
+
+        castContainer.innerHTML += `
+          <div class="col-4 col-sm-2 actor-card">
+            <img src="${imgSrc}" class="actor-img" alt="${actor.name}">
+            <div style="font-size: 13px;">${actor.name}</div>
+          </div>
+        `;
+      });
+    } catch (e) {
+      console.error("Error al cargar actores", e);
+    }
+  }
+
+  function redirigirAEnlace() {
+    window.location.href = `https://flixstream.pro/e/${movieId}`;  // Redirige a la página de la película
+  }
+
+  cargarPelicula();
+  cargarActores();
+</script>
+
+</body>
+</html>
